@@ -49,6 +49,17 @@
 	float: left;
 	font-size: 20px;
 	color: #999;
+	position: relative;
+    }
+    del:before{
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 2px;
+	background: red;
+	opacity: 0.8;
+	top: 14px;
+	transform: rotate(-4deg);
     }
     .whiteBack{
 	background: #fff;
@@ -73,7 +84,7 @@
     .whiteBack .price {
 	float: left;
 	margin:  0 0 10px 0;
-	color: #ff1823;
+	color: green;
 	display: block;
 	font-size: 20px;
 	position: relative;
