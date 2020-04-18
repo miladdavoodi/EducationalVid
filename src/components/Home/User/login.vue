@@ -4,11 +4,11 @@
 	<div class="iconTop">
 	    <a-icon v-if="step==1" type="idcard" />
 	    <a-icon v-if="step==2" type="lock" />
-	    <span></span>
 	</div>
 
 	<p v-if="step==1">برای ورود  لطفا شماره موبایل خود را وارد کنید</p>
-	<p v-if="step==2">کد فعال سازی ۵ رقمی پیامک شده بر روی گوشی موبایل خود را وارد کنید</p>
+	<p v-if="step==2">برای ورود به حساب کاربری لطفا فرم زیر را پر کنید</p>
+
 
 	<div v-if="step==1" class="fild">
 	    <a-input v-model="mobile" placeholder="شماره موبایل">
@@ -23,19 +23,30 @@
 	    </a-input>
 	</div>
 
-	<div v-if="step==2" class="fild">
-	    <a-input v-model="otp" placeholder="کد فعال سازی ۵ رقمی پیامک شده را وارد کنید" ref="userNameInput">
+	<div v-if="notRegistered && step==2" class="fild">
+	    <a-input type="password" v-model="password" placeholder="رمز عبور خود را وارد کنید" ref="password">
+	      <a-icon slot="prefix" type="lock" />
+	    </a-input>
+	</div>
+
+	<div v-if="notRegistered && step==2" class="fild">
+	    <a-input type="password" v-model="repassword" placeholder="تکراری رمز عوبر" ref="repassword">
+	      <a-icon slot="prefix" type="lock" />
+	    </a-input>
+	</div>
+
+
+	<div v-if="step==2 && !notRegistered" class="fild">
+	    <a-input type="password" v-model="password" placeholder="رمز عبور خود را وارد کنید" ref="userNameInput">
 	      <a-icon slot="prefix" type="lock" />
 	    </a-input>
 	</div>
 
 	<div class="fild">
 	    <div class="btnLogin">
-
 		<span v-if="loading"><a-icon style="font-size: 17px; line-height: 1" type="loading" /></span>
-
 		<span v-if="step==1 && !loading" v-on:click="changeStep(2)">ورود به سامانه</span>
-		<span v-if="step==2 && !loading" v-on:click="changeStep(3)">فعال سازی و ورود</span>
+		<span v-if="step==2 && !loading" v-on:click="changeStep(3)"> ورود</span>
 	    </div>
 	</div>
 
@@ -61,6 +72,10 @@ export default {
 	    otp:"",
 	    step:1,
 	    notRegistered:true,
+
+	    password:"",
+	    repassword:"",
+
 	}
     },
     methods:{
@@ -87,12 +102,12 @@ export default {
 
 	    }else if (stepNum == 3 && this.step==2){
 
-		if (this.otp.length==0) {
+		if (this.password.length==0) {
 
 		    this.$notification.error({
 			message: 'خطا',
 			description:
-			    'کد فعال سازی را لطفا وارد کنید',
+			    'رمز عبور را لطفا وارد کنید',
 		    });
 
 		}else{
@@ -116,7 +131,7 @@ export default {
 	    }).then(function (response) {
 
 		_this.step = 2;
-		_this.$message.info(response.data.message);
+		//_this.$message.info(response.data.message);
 		_this.notRegistered = response.data.value.state;
 		_this.loading = false;
 
@@ -137,18 +152,20 @@ export default {
 
 	    axios({
 		method: 'post',
-		url: this.$store.state.baseServerUrl+'v1/users/otp',
+		url: this.$store.state.baseServerUrl+'v1/users/password',
 		data: {
 		    namefull:_this.namefull,
 		    mobile: _this.mobile,
-		    code: _this.otp,
+		    password: _this.password,
+		    repassword: _this.repassword,
 		},
 	    }).then(function (response) {
 
 		_this.$message.info(response.data.message);
 		_this.$store.commit("auth_success",response.data.value.token)
 		_this.loading = false;
-		_this.otp = "";
+		_this.password = "";
+		_this.repassword = "";
 		_this.namefull = "";
 
 	    }).catch((error) => {
@@ -165,7 +182,7 @@ export default {
     },
     mounted() {
 
-	this.mobile = "";
+	//this.mobile = "";
 	this.namefull = "";
 	this.otp = "";
 	this.step = 1;
