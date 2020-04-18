@@ -4,6 +4,7 @@
 	<div class="iconTop">
 	    <a-icon v-if="step==1" type="idcard" />
 	    <a-icon v-if="step==2" type="lock" />
+	    <span></span>
 	</div>
 
 	<p v-if="step==1">برای ورود  لطفا شماره موبایل خود را وارد کنید</p>
